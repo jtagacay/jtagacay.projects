@@ -1,24 +1,50 @@
 name: Playwright Tests
-on: workflow_dispatch
-  # push:
-  #   branches: [ main, master ]
+on:
+  push:
+    branches: [ main, master ]
   # pull_request:
   #   branches: [ main, master ]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: macos-latest
+    env: 
+      BASE_URL: ${{ Actions.TEST }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    
+    # Install root dependencies
     - name: Install dependencies
       run: npm ci
+    
+    # Install app deps
+    - name: Install app dependencies
+      run: |
+        cd pw-practice-app
+        npm ci
+
+    # Start app in background
+    - name: Start app
+      run: |
+        cd pw-practice-app
+        npm start &
+    
+    # Wait for the app
+    - name: Wait for app
+      run: npx wait-on ${{ env.BASE_URL }}
+    
+    # Install the browsers
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    
+    # Run the test
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test tests --project=chromium
+
+    # Upload report
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
