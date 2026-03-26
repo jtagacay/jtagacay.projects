@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 60
     runs-on: macos-latest
     env: 
-      BASE_URL: ${{ Actions.TEST }}
+      BASE_URL: ${{ vars.TEST }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
