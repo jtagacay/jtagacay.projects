@@ -8,6 +8,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: macos-latest
+    environment: Actions
     env: 
       BASE_URL: ${{ vars.TEST }}
     steps:
