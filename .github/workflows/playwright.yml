@@ -8,41 +8,54 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: macos-latest
+    environment: test_env
     env: 
-      BASE_URL: ${{ Actions.TEST }}
+      BASE_URL: ${{ vars.TEST_LINK }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: lts/*
-    
-    # Install root dependencies
-    - name: Install dependencies
-      run: npm ci
-    
+        node-version: 'lts/*'
+    # Install Cache Modules
+    - name: Cache Node Modules
+      id: cache-npm
+      uses: actions/cache@v4
+      with:
+        path: |
+          pw-practice-app/node_modules
+          playwright/node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('pw-practice-app/package-lock.json', 'playwright/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     # Install app deps
     - name: Install app dependencies
-      run: |
-        cd pw-practice-app
-        npm ci
+      working-directory: ./pw-practice-app
+      run: npm ci
 
     # Start app in background
     - name: Start app
-      run: |
-        cd pw-practice-app
-        npm start &
+      working-directory: ./pw-practice-app
+      run: npm start &
     
     # Wait for the app
     - name: Wait for app
       run: npx wait-on ${{ env.BASE_URL }}
     
+    # Install playwright dependencies
+    - name: Install playwright dependencies
+      working-directory: ./playwright
+      run: npm ci
+    
     # Install the browsers
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      working-directory: ./playwright
+      run: npx playwright install --with-deps chromium
     
     # Run the test
     - name: Run Playwright tests
-      run: npx playwright test tests --project=chromium
+      working-directory: ./playwright
+      run: npx playwright test --project=chromium
 
     # Upload report
     - uses: actions/upload-artifact@v4

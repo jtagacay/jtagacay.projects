@@ -7,11 +7,22 @@ export class reusableMethods {
         this.page = page
     }
 
+    // ✅  To click the element
     async clickElement(locator: Locator) {
-        await locator.scrollIntoViewIfNeeded();
-        await locator.waitFor({state:"visible"});
-        await locator.click({force: true});
-        console.log(`✅  Clicked the ${locator.toString()}`);
+        await locator.scrollIntoViewIfNeeded()
+        await locator.waitFor({state:"visible"})
+        await locator.click({force: true})
+        console.log(`✅  Clicked the ${locator.toString()}`)
+    }
+
+    // ✅ To verify if the inner text is equal to the expected text
+    /**
+     * @param text - input a text that should be expected.
+     */
+    async verifyInnerTextElement(locator: Locator, text: string) {
+        await locator.scrollIntoViewIfNeeded()
+        let innerText = locator.innerText()
+        expect(innerText).toBe(text)
     }
 
     // ==============================
