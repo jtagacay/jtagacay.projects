@@ -24,19 +24,12 @@ export class reusableMethods {
         try {
             await locator.scrollIntoViewIfNeeded()
             await locator.waitFor({state:"visible"})
-            await locator.click({force: true})
+            const isClicked = await locator.click({force: true})
             let position = await locator.boundingBox()
-            console.log(`\n\n|================ CLICK ELEMENT =====================|\n`)
-            console.log(`✅ Clicked the element '\x1b[36m${elementName}'\x1b[0m`)
-            console.log(`✅ The element '\x1b[36m${elementName}'\x1b[0m position is on X: \x1b[33m${position?.x}\x1b[0m and Y: \x1b[33m${position?.y}\x1b[0m with W: \x1b[33m${position?.width}\x1b[0m and H: \x1b[33m${position?.height}\x1b[0m`)
-            console.log(`\n|====================================================|`)
+            this.generateConsoleLog(`Passed| Element - was clicked.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
         }
         catch {
-            console.log(`\n\n|================ CLICK ELEMENT =====================|\n`)
-            console.log(`❌ Unable to click the element \x1b[36m'${elementName}'\x1b[0m`)
-            console.log(`OR`)
-            console.log(`❌ The element \x1b[36m'${elementName}'\x1b[0m not found!`)
-            console.log(`\n|====================================================|`)
+            this.generateConsoleLog(`Failed| Element - not found. | ${elementName}`)
         }
     }
 
@@ -51,18 +44,15 @@ export class reusableMethods {
         let innerText = (await locator.innerText()).trim()
         let position = await locator.boundingBox()
         try {
-            expect(innerText).toBe(text)
-            console.log(`\n\n|================ VERIFY INNERTEXT =====================|\n`)
-            console.log(`✅ Success: Text \x1b[36m'${text}'\x1b[0m matches in element \x1b[36m'${elementName}'\x1b[0m`)
-            console.log(`✅ The element \x1b[36m'${elementName}'\x1b[0m position is on X: \x1b[33m${position?.x}\x1b[0m and Y: \x1b[33m${position?.y}\x1b[0m with W: \x1b[33m${position?.width}\x1b[0m and H: \x1b[33m${position?.height}\x1b[0m`)
-            console.log(`\n|====================================================|`)
+            if(innerText == text) {
+                this.generateConsoleLog(`Passed| Element - innertext was matched.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
+            }
+            else {
+                this.generateConsoleLog(`Failed| Element - innertext did not matched.| ${elementName}|`)
+            }
         }
         catch {
-            console.log(`\n\n|================ VERIFY INNERTEXT =====================|\n`)
-            console.log(`❌ Failure: Text  \x1b[36m'${text}'\x1b[0m did not match in element \x1b[36m'${elementName}'\x1b[0m`)
-            console.log(`OR`)
-            console.log(`❌ Element \x1b[36m'${elementName}'\x1b[0m not found!`)
-            console.log(`\n|====================================================|`)
+            this.generateConsoleLog(`Failed| Element - not found. | ${elementName}`)
         }
     }
 
@@ -77,25 +67,57 @@ export class reusableMethods {
             const isVisible = await locator.isVisible();
             let position = await locator.boundingBox()
             if(isVisible) {
-                console.log(`\n\n|================ Element Visible =====================|\n`)
-                console.log(`✅ Element \x1b[36m'${elementName}'\x1b[0m is visible`);
-                console.log(`✅ The element \x1b[36m'${elementName}'\x1b[0m position is on X: \x1b[33m${position?.x}\x1b[0m and Y: \x1b[33m${position?.y}\x1b[0m with W: \x1b[33m${position?.width}\x1b[0m and H: \x1b[33m${position?.height}\x1b[0m`)
-                console.log(`\n|====================================================|`)
+                this.generateConsoleLog(`Passed| Element - is visible.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
             }
             else {
-                console.log(`\n\n|================ Element Visible =====================|\n`)
-                console.log(`❌ Element \x1b[36m'${elementName}'\x1b[0m is not visible`);
-                console.log(`\n|====================================================|`)
+                this.generateConsoleLog(`Failed| Element - is not visible.| ${elementName}|`)
             }
         }
         catch {
-            console.log(`\n\n|================ Element Visible =====================|\n`)
-            console.log(`❌ Element \x1b[36m'${elementName}'\x1b[0m not found!`);
-            console.log(`\n|====================================================|`)
+            
         }
     }
+    
+    
 
-
+    // ==============================
+    // 📌 For Console Log
+    // ==============================
+    /**
+     * 
+     * @param message - Enter a message and split the message with "| " <1-Passed/Failed>  <2-message split with " - "> <3-elementName> <4-position>
+     */
+    async generateConsoleLog(response: string):Promise<String> {
+        const RED = '\x1b[31m'
+        const GREEN = '\x1b[32m'
+        const YELLOW = '\x1b[33m'
+        const CYAN = '\x1b[36m'
+        const RESET = '\x1b[0m'
+        let [
+            isSuccess, 
+            message,
+            elementName, 
+            positionX = "N/A", 
+            positionY = "N/A", 
+            positionWidth = "N/A", 
+            positionHeight = "N/A"
+            ] = response.split("| ")
+        let [splitMessage1, splitMessage2] = message.split(" - ")
+        let setMessage: any;
+            let isAction = ["Clicked", "Visible", "InnerText"].find(word => splitMessage2.toLowerCase().includes(word.toLowerCase()))
+            if(positionX && positionY && positionWidth && positionHeight == "N/A") {
+                setMessage = console.log(`\n\n|================ Element ${isAction} =====================|\n\n` +
+                            `${isSuccess === "Passed" ? "✅ Passed: " : "❌ Failed: "} ${splitMessage1} ${CYAN}'${elementName}'${RESET} ${splitMessage2}\n` +
+                            `|====================================================|`);
+            }
+            else {
+                setMessage = console.log(`\n\n|================ Element ${isAction} =====================|\n\n` +
+                            `${isSuccess === "Passed" ? "✅ Passed: " : "❌ Failed: "} ${CYAN}${splitMessage1} ${elementName} ${splitMessage2}${RESET}\n` +
+                            `The Element ${CYAN}'${elementName}'${RESET} is on position of X: ${YELLOW}${positionX}${RESET} and Y: ${YELLOW}${positionY}${RESET} with W: ${YELLOW}${positionWidth}${RESET} and H: ${YELLOW}${positionHeight}${RESET}\n\n` +
+                            `|======================================================|`);
+            }
+        return setMessage;
+    }
 
     // ==============================
     // 📌 Environment Helper
