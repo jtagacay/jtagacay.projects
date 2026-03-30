@@ -32,22 +32,29 @@ export class iotDashboard {
             menuIotDashboard            :   '//*[@class="menu-items"]//*[@title="IoT Dashboard"]',
             menuForms                   :   '//*[@class="menu-items"]//*[@title="Forms"]',
             menuModalOverlays           :   '//*[@class="menu-items"]//*[@title="Modal & Overlays"]',
-            cardLight                   :   '//*[@ng-reflect-title="Light"]',
-            cardRollerShades            :   '//*[@ng-reflect-title="Roller Shades"]',
-            cardWirelessAudio           :   '//*[@ng-reflect-title="Wireless Audio"]',
-            cardCoffeeMaker             :   '//*[@ng-reflect-title="Coffee Maker"]',
+            cardLight                   :   '//*[@ng-reflect-title="Light"]//*[local-name()="nb-card"]',
+            cardRollerShades            :   '//*[@ng-reflect-title="Roller Shades"]//*[local-name()="nb-card"]',
+            cardWirelessAudio           :   '//*[@ng-reflect-title="Wireless Audio"]//*[local-name()="nb-card"]',
+            cardCoffeeMaker             :   '//*[@ng-reflect-title="Coffee Maker"]//*[local-name()="nb-card"]',
             tabTemperature              :   '//*[text()="Temperature"]//ancestor::li',
             tabHumidity                 :   '//*[text()="Humidity"]//ancestor::li',
             draggerTemperature          :   '//*[@tabTitle="Temperature"]//*[local-name()="circle"]',
             powerTemperature            :   '//*[@tabTitle="Temperature"]//button[contains(@class, "power-bg")]',
             valueTemperature            :   '//*[@tabTitle="Temperature"]//*[@class="slider-value-container"]',
+
+            // This is text only for the sidebar menu
+            menuIotDashboardText        :   '//span[text()="IoT Dashboard"]',
+            menuFormsText               :   '//span[text()="Forms"]',
+            menuModalOverlaysText       :   '//span[text()="Modal & Overlays"]',
+            cardLightText               :   '//*[@ng-reflect-title="Light"]//*[contains(@class, "paragraph-2")]',
+
+            //*[contains(@class, "status")]
+
         }
         let xpath = AppLocators[locatorName]
         // Check if the key actually exists
         if (!xpath) {
-            console.log(`\n\n|================ FIND LOCATOR =====================|\n`)
-            console.error(`❌ Locator name "${locatorName}" not found! Continuing...`);
-            console.log(`\n|===================================================|`)
+            this.rm.generateConsoleLog(`Failed| Not Found| Locator name - not found Continuing...| ${locatorName}`)
             return this.page.locator(xpath);
         }
         return this.page.locator(xpath);
@@ -92,5 +99,30 @@ export class iotDashboard {
     async verifyProfileNameIsVisible() {
         await this.page.waitForLoadState('domcontentloaded')
         await this.rm.verifyElementVisible(this.locators('userProfileName'), 'User Profile Name in the Top Bar Menu')
+    }
+
+    async clickTheSideBarMenu() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.clickElement(this.locators('sidebarToggle'), 'Sidebar Menu to Show Icon only or with Title of the Category')
+    }
+
+    async sideBarMenuIsNotVisible() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyElementNotVisible(this.locators('menuIotDashboardText'), 'Sidebar Menu - IOT Dashboard')
+        await this.rm.verifyElementNotVisible(this.locators('menuFormsText'), 'Sidebar Menu - Forms')
+        await this.rm.verifyElementNotVisible(this.locators('menuModalOverlaysText'), 'Sidebar Menu - Modal Overlays')
+    }
+
+    async verifyLightIsVisible() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyElementVisible(this.locators('cardLight'), 'The Card Light')
+    }
+
+    async verifyIsLightOnOrOff() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyInnerTextElement(this.locators('cardLightText'), 'On', 'The Light is On')
+        await this.rm.clickElement(this.locators('cardLight'), 'Switch Light to Off')
+        await this.rm.verifyInnerTextElement(this.locators('cardLightText'), 'Off', 'The Light is Off')
+        await this.rm.verifyElementAttribute(this.locators('cardLight'), 'class', 'Off', 'The Light is Off')
     }
 }
