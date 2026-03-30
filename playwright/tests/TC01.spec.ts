@@ -24,4 +24,14 @@ test.describe.serial(`TC01`, () => {
         await iot.verifyProfileAvatarIsVisible()
         await iot.verifyProfileNameIsVisible()
     })
+
+    test('Verify the sidebar menu when', {tag: '@P1'}, async () => {
+        await iot.clickTheSideBarMenu()
+        await iot.sideBarMenuIsNotVisible()
+    })
+
+    test('Verify the Toogle Light', {tag: '@P1'}, async () => {
+        await iot.verifyLightIsVisible()
+        await iot.verifyIsLightOnOrOff();
+    })
 });
