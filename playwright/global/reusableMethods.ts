@@ -18,18 +18,18 @@ export class reusableMethods {
     // ✅  To click the element
     /**
      * @param locator - input the locator parameter
-     * @param elementName - input any message or remarks or element name in this parameter
+     * @param remarks - input any message or remarks or element name in this parameter
      */
-    async clickElement(locator: Locator, elementName: string) {
+    async clickElement(locator: Locator, remarks: string) {
         try {
             await locator.scrollIntoViewIfNeeded()
             await locator.waitFor({state:"visible"})
             const isClicked = await locator.click({force: true})
             let position = await locator.boundingBox()
-            this.generateConsoleLog(`Passed| Element - was clicked.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
+            this.generateConsoleLog(`Passed| Clicked| Element - was clicked.| ${remarks}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
         }
         catch {
-            this.generateConsoleLog(`Failed| Element - not found. | ${elementName}`)
+            this.generateConsoleLog(`Failed| Clicked| Element - not found. | ${remarks}`)
         }
     }
 
@@ -37,48 +37,79 @@ export class reusableMethods {
     /**
      * @param locator - input the locator
      * @param text - input a text that should be expected.
-     * @param elementName - input any message or remarks or element name in this parameter 
+     * @param remarks - input any message or remarks or element name in this parameter 
      */
-    async verifyInnerTextElement(locator: Locator, text: string, elementName: string) {
+    async verifyInnerTextElement(locator: Locator, text: string, remarks: string) {
         await locator.scrollIntoViewIfNeeded()
         let innerText = (await locator.innerText()).trim()
         let position = await locator.boundingBox()
         try {
-            if(innerText == text) {
-                this.generateConsoleLog(`Passed| Element - innertext was matched.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
-            }
-            else {
-                this.generateConsoleLog(`Failed| Element - innertext did not matched.| ${elementName}|`)
-            }
+            this.generateConsoleLog(
+                innerText.toLowerCase() === text.toLowerCase() ? `Passed| Innertext| Element - innertext was matched.| ${remarks}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`
+                : `Failed| Innertext| Element - innertext did not matched.| ${remarks}|`
+            )
         }
         catch {
-            this.generateConsoleLog(`Failed| Element - not found. | ${elementName}`)
+            this.generateConsoleLog(`Failed| Innertext| Element - not found. | ${remarks}`)
         }
     }
 
     // ✅ To verify if the element is visible
     /**
      * @param locator - input the locator parameter
-     * @param elementName - input any message or remarks or element name in this parameter
+     * @param remarks - input any message or remarks or element name in this parameter
      */
-    async verifyElementVisible(locator: Locator, elementName: string) {
+    async verifyElementVisible(locator: Locator, remarks: string) {
         try {
             await locator.scrollIntoViewIfNeeded()
             const isVisible = await locator.isVisible();
             let position = await locator.boundingBox()
-            if(isVisible) {
-                this.generateConsoleLog(`Passed| Element - is visible.| ${elementName}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`)
-            }
-            else {
-                this.generateConsoleLog(`Failed| Element - is not visible.| ${elementName}|`)
-            }
+            this.generateConsoleLog(
+                isVisible ? `Passed| Visible| Element - is visible.| ${remarks}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`
+                : `Failed| Visible| Element - is not visible.| ${remarks}`
+            )
         }
         catch {
-            
+            this.generateConsoleLog(`Failed| Visible| Element - not found.| ${remarks}`)
         }
     }
     
-    
+    // ✅ To verify if the element is not visible
+    /**
+     * @param locator - input the locator parameter
+     * @param remarks - input any message or remarks or element name in this parameter
+     */
+    async verifyElementNotVisible(locator:Locator, remarks:string) {
+        const isHidden = !await locator.isVisible()
+        try {
+            this.generateConsoleLog(
+                isHidden ? `Passed| Not Visible| Element - is not visible.| ${remarks}`
+                : `Failed| Not Visible| Element - is visible.| ${remarks}`
+            )
+        }
+        catch {
+            this.generateConsoleLog(`Failed| Not Visible| Element - not found.| ${remarks}`)
+        }
+    }
+
+    // ✅ To verify if the attribute of the element is expected
+    /**
+     * @param locator - input the locator parameter
+     * @param remarks - input any message or remarks or element name in this parameter
+     */
+
+    async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks: string) {
+        const placeholder = await locator.getAttribute(`${attribute}`)
+        try {
+            this.generateConsoleLog(
+                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Element Attribute| Element - attribute was matched| ${remarks}`
+                : `Failed| Element Attribute| Element - attribute was not matched| ${remarks}`
+            )
+        }
+        catch {
+            this.generateConsoleLog(`Failed| Element Not Found| Element - not found.| ${remarks}`)
+        }
+    }
 
     // ==============================
     // 📌 For Console Log
@@ -94,7 +125,8 @@ export class reusableMethods {
         const CYAN = '\x1b[36m'
         const RESET = '\x1b[0m'
         let [
-            isSuccess, 
+            isSuccess,
+            title, 
             message,
             elementName, 
             positionX = "N/A", 
@@ -104,17 +136,17 @@ export class reusableMethods {
             ] = response.split("| ")
         let [splitMessage1, splitMessage2] = message.split(" - ")
         let setMessage: any;
-            let isAction = ["Clicked", "Visible", "InnerText"].find(word => splitMessage2.toLowerCase().includes(word.toLowerCase()))
+            let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found"].find(word => title.toLowerCase() === (word.toLowerCase()))
             if(positionX && positionY && positionWidth && positionHeight == "N/A") {
-                setMessage = console.log(`\n\n|================ Element ${isAction} =====================|\n\n` +
-                            `${isSuccess === "Passed" ? "✅ Passed: " : "❌ Failed: "} ${splitMessage1} ${CYAN}'${elementName}'${RESET} ${splitMessage2}\n` +
-                            `|====================================================|`);
+                setMessage = console.log(`\n\n|================ Element ${isAction} =============================|\n\n` +
+                            `${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${splitMessage1} ${CYAN}'${elementName}'${RESET} ${splitMessage2}\n\n` +
+                            `|============================================================|`);
             }
             else {
-                setMessage = console.log(`\n\n|================ Element ${isAction} =====================|\n\n` +
-                            `${isSuccess === "Passed" ? "✅ Passed: " : "❌ Failed: "} ${CYAN}${splitMessage1} ${elementName} ${splitMessage2}${RESET}\n` +
+                setMessage = console.log(`\n\n|================ Element ${isAction} =============================|\n\n` +
+                            `${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${CYAN}${splitMessage1} ${elementName} ${splitMessage2}${RESET}\n` +
                             `The Element ${CYAN}'${elementName}'${RESET} is on position of X: ${YELLOW}${positionX}${RESET} and Y: ${YELLOW}${positionY}${RESET} with W: ${YELLOW}${positionWidth}${RESET} and H: ${YELLOW}${positionHeight}${RESET}\n\n` +
-                            `|======================================================|`);
+                            `|==============================================================|`);
             }
         return setMessage;
     }
