@@ -20,7 +20,8 @@ export class iotDashboard {
         const AppLocators: Record <string, string> = {
             textLogo                    :   '//*[@class="fixed"]//*[@class="logo"]',
             sidebarToggle               :   '//*[@class="fixed"]//*[contains(@class, "sidebar-toggle")]',
-            appearanceSelection         :   '//*[@class="fixed"]//button[@class="select-button"]',
+            appearanceSelectio         :   '//*[@class="fixed"]//button[@class="select-button"]',    //This is a wrong name to force failed some line (expected)
+            // appearanceSelection         :   '//*[@class="fixed"]//button[@class="select-button"]',  
             searchLogo                  :   '//*[contains(@class, "start-search")]',
             emailLogo                   :   '//*[@class="eva eva-email-outline"]',
             bellLogo                    :   '//*[@class="eva eva-bell-outline"]',
@@ -46,7 +47,7 @@ export class iotDashboard {
         if (!xpath) {
             console.log(`\n\n|================ FIND LOCATOR =====================|\n`)
             console.error(`❌ Locator name "${locatorName}" not found! Continuing...`);
-            console.log(`\n|====================================================|`)
+            console.log(`\n|===================================================|`)
             return this.page.locator(xpath);
         }
         return this.page.locator(xpath);
