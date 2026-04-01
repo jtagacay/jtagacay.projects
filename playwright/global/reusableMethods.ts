@@ -100,9 +100,10 @@ export class reusableMethods {
 
     async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks: string) {
         const placeholder = await locator.getAttribute(`${attribute}`)
+        let position = await locator.boundingBox()
         try {
             this.generateConsoleLog(
-                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Element Attribute| Element - attribute was matched| ${remarks}`
+                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched| ${remarks}| ${position?.x}| ${position?.y}| ${position?.width}| ${position?.height}`
                 : `Failed| Element Attribute| Element - attribute was not matched| ${remarks}`
             )
         }
@@ -136,7 +137,7 @@ export class reusableMethods {
             ] = response.split("| ")
         let [splitMessage1, splitMessage2] = message.split(" - ")
         let setMessage: any;
-            let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found"].find(word => title.toLowerCase() === (word.toLowerCase()))
+            let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found", "Attribute"].find(word => title.toLowerCase() === (word.toLowerCase()))
             if(positionX && positionY && positionWidth && positionHeight == "N/A") {
                 setMessage = console.log(`\n\n|================ Element ${isAction} =============================|\n\n` +
                             `${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${splitMessage1} ${CYAN}'${elementName}'${RESET} ${splitMessage2}\n\n` +
