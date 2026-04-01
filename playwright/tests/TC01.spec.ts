@@ -1,8 +1,8 @@
 import { test, Page } from "playwright/test";
 import { reusableMethods } from "../global/reusableMethods";
-import { iotDashboard } from "../steps/iotDashboard";
+import { iotDashboard } from "../actions/iotDashboard";
 
-test.describe.serial(`TC01`, () => {
+test.describe.serial(`TC01 - IoT Dashboard`, () => {
     let page: Page
     let rm: reusableMethods
     let iot: iotDashboard
@@ -32,6 +32,9 @@ test.describe.serial(`TC01`, () => {
 
     test('Verify the Toogle Light', {tag: '@P1'}, async () => {
         await iot.verifyLightIsVisible()
-        await iot.verifyIsLightOnOrOff();
+        await iot.verifyLightOff()
+        await iot.verifyRollerShadesOff()
+        await iot.verifyWirelessAudioOff()
+        await iot.verifyCoffeeMakerOff()
     })
 });
