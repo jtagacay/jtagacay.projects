@@ -118,11 +118,35 @@ export class iotDashboard {
         await this.rm.verifyElementVisible(this.locators('cardLight'), 'The Card Light')
     }
 
-    async verifyIsLightOnOrOff() {
+    async verifyLightOff() {
         await this.page.waitForLoadState('domcontentloaded')
         await this.rm.verifyInnerTextElement(this.locators('cardLightText'), 'On', 'The Light is On')
-        await this.rm.clickElement(this.locators('cardLight'), 'Switch Light to Off')
+        await this.rm.clickElement(this.locators('cardLight'), 'Switch Off the Light')
         await this.rm.verifyInnerTextElement(this.locators('cardLightText'), 'Off', 'The Light is Off')
         await this.rm.verifyElementAttribute(this.locators('cardLight'), 'class', 'Off', 'The Light is Off')
+    }
+
+    async verifyRollerShadesOff() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyInnerTextElement(this.locators('cardRollerShades'), 'On', 'The Roller Shades is On')
+        await this.rm.clickElement(this.locators('cardRollerShades'), 'Switch Off the Roller Shades')
+        await this.rm.verifyInnerTextElement(this.locators('cardRollerShades'), 'Off', 'The Roller Shades is Off')
+        await this.rm.verifyElementAttribute(this.locators('cardRollerShades'), 'class', 'Off', 'The Roller Shades is Off')
+    }
+    
+    async verifyWirelessAudioOff() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyInnerTextElement(this.locators('cardWirelessAudio'), 'On', 'The Wireless Audio is On')
+        await this.rm.clickElement(this.locators('cardWirelessAudio'), 'Switch Off the Wireless Audio')
+        await this.rm.verifyInnerTextElement(this.locators('cardWirelessAudio'), 'Off', 'The Wireless Audio is Off')
+        await this.rm.verifyElementAttribute(this.locators('cardWirelessAudio'), 'class', 'Off', 'The Wireless Audio is Off')
+    }
+
+    async verifyCoffeeMakerOff() {
+        await this.page.waitForLoadState('domcontentloaded')
+        await this.rm.verifyInnerTextElement(this.locators('cardCoffeeMaker'), 'On', 'The Coffee Maker is On')
+        await this.rm.clickElement(this.locators('cardCoffeeMaker'), 'Switch Off the Coffee Maker')
+        await this.rm.verifyInnerTextElement(this.locators('cardCoffeeMaker'), 'Off', 'The Coffee Maker is Off')
+        await this.rm.verifyElementAttribute(this.locators('cardCoffeeMaker'), 'class', 'Off', 'The Coffee Maker is Off')
     }
 }
