@@ -1,6 +1,6 @@
 import { test, Page } from "playwright/test";
-import { reusableMethods } from "../global/reusableMethods";
-import { iotDashboard } from "../actions/iotDashboard";
+import { reusableMethods } from "../1-global/reusableMethods";
+import { iotDashboard } from "../2-actions/iotDashboard";
 
 test.describe.serial(`TC01 - IoT Dashboard`, () => {
     let page: Page
@@ -36,5 +36,10 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
         await iot.verifyRollerShadesOff()
         await iot.verifyWirelessAudioOff()
         await iot.verifyCoffeeMakerOff()
+    })
+
+    test('Verify the Temperature', {tag: '@P1'}, async () => {
+        await iot.verifyTemperaturePower()
+        await iot.dragTheTemperatureDegree(410, 320)
     })
 });
