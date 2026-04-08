@@ -32,14 +32,36 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
 
     test('Verify the Toogle Light', {tag: '@P1'}, async () => {
         await iot.verifyLightIsVisible()
-        await iot.verifyLightOff()
-        await iot.verifyRollerShadesOff()
-        await iot.verifyWirelessAudioOff()
-        await iot.verifyCoffeeMakerOff()
+        await iot.verifyToggleLight()
+        await iot.verifyToggleRollerShades()
+        await iot.verifyToggleWirelessAudio()
+        await iot.verifyToggleCoffeeMaker()
     })
 
-    test('Verify the Temperature', {tag: '@P1'}, async () => {
+    test('Verify the Temperature Tab', {tag: '@P1'}, async () => {
         await iot.verifyTemperaturePower()
-        await iot.dragTheTemperatureDegree(410, 320)
+        await iot.dragTheTemperatureDegree(300, 65, 21)
+        await iot.dragTheTemperatureDegree(200, 320, 12)
+        await iot.dragTheTemperatureDegree(300, 65, 21)
+        await iot.dragTheTemperatureDegree(385, 300, 30)
+    })
+
+    test('Verify the Humidity Tab', {tag: '@P1'}, async () => {
+        await iot.clickHumidity()
+        await iot.verifyHumidityPower()
+        await iot.dragTheHumidityPercentage(300, 65, 50)
+        await iot.dragTheHumidityPercentage(200, 640, 0)
+        await iot.dragTheHumidityPercentage(300, 65, 50)
+        await iot.dragTheHumidityPercentage(385, 640, 100)
+    })
+
+    test('Verify the Temperature Mode', {tag:'@P1'}, async () => {
+        await iot.clickTemperature()
+        await iot.verifyTemperatureMode()
+    })
+    
+    test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
+        await iot.clickHumidity()
+        await iot.verifyHumidityMode()
     })
 });
