@@ -29,6 +29,10 @@ export default defineConfig({
     // baseURL: 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    // 1. Remove 'viewport: null' and deviceScaleFactor conflicts
+    // 2. Use launchOptions to trigger the window size
+    // viewport: { width: 1920, height: 1080 },
+
     trace: 'on-first-retry',
   },
 
@@ -40,8 +44,9 @@ export default defineConfig({
         // ...devices['Desktop Chrome'],
         viewport: null,
         launchOptions: {
-          slowMo: 200,
+          headless: false,
           args: ['--start-maximized'],
+          slowMo: 200,
         }
        },
     },
