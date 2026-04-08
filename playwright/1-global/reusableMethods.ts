@@ -1,8 +1,8 @@
 import { Locator, expect, Page, PlaywrightTestConfig } from '@playwright/test';
 
 export class reusableMethods {
-
     readonly page: Page
+    private logBuffer: string[] = []
     constructor(page: Page) {
         this.page = page
     }
@@ -20,7 +20,7 @@ export class reusableMethods {
      * @param locator - input the locator parameter
      * @param remarks - input any message or remarks or element name in this parameter
      */
-    async clickElement(locator: Locator, remarks: string) {
+    async clickElement(locator: Locator, remarks?: string) {
         let isClicked = false
         try {
             await locator.scrollIntoViewIfNeeded()
@@ -42,40 +42,53 @@ export class reusableMethods {
      * * **Note:** Use `getText` if you want to get the text from innertext.
      * Otherwise, input a text
      * @param remarks - input any message or remarks or element name in this parameter 
+     * @param [pseudo=""] - **OPTIONAL** only for ::before or ::after
      */
-    async verifyInnerTextElement(locator: Locator, text: string, remarks: string) {
-        const boldGreenText = `\x1b[1;32m`
-        const CYAN = '\x1b[36m'
-        const reset = `\x1b[0m`
-        await locator.scrollIntoViewIfNeeded()
-        try {
-            await expect(locator).toHaveText(/.+/, {timeout: 2000})
-            let innerText = (await locator.innerText()).trim()
-            const isMatched = innerText.toLowerCase() === text.toLowerCase()
-            if(text === 'getText') {
-                this.generateConsoleLog(`Warning| Innertext| The user select ${boldGreenText}'getText'${reset}\nInitiate getting the innertext of ${CYAN}'${remarks}'${reset}\nThe innertext value of the element is ${boldGreenText}'${innerText}'${reset}`)
+    async verifyInnerTextElement(locator: Locator, text: string, remarks?: string, pseudo: string = "") {
+    const boldGreenText = '\x1b[1;32m'
+    const CYAN = '\x1b[36m'
+    const reset = '\x1b[0m'
+    
+    await locator.scrollIntoViewIfNeeded()
+    try {
+        await expect(locator).toHaveText(/.+/, {timeout: 2000})
+        let innerText = await locator.evaluate((element, pseudoType) => {
+            let val = element.textContent.trim()
+            if (pseudoType) {
+                const style = window.getComputedStyle(element, pseudoType);
+                const content = style.getPropertyValue('content').replace(/['"]/g, '');
+                if (content && content !== 'none') val = val + content;
+            }
+            return val;
+        }, pseudo);
+        // ------------------------------------------
 
-            }
-            else {
-                this.generateConsoleLog(
-                isMatched
-                ? `Passed| Innertext| Element with the text of ${boldGreenText}'${text}'${reset} - innertext was matched.| ${remarks}`
-                : `Failed| Innertext| Element - innertext did not matched.| ${remarks}`
-                )
-            }
+        const isMatched = innerText.toLowerCase() === text.toLowerCase()
+        
+        if(text === 'getText') {
+            this.generateConsoleLog(`Warning| Innertext| The user select ${boldGreenText}'getText'${reset}\n ● Initiate getting the innertext of ${CYAN}'${remarks}'${reset}\n ● The innertext value of the element is ${boldGreenText}'${innerText}'${reset}`)
+            return innerText
         }
-        catch(error) {
-            console.error(error)
-            this.generateConsoleLog(`Failed| Unexpected value: ${text}| ${remarks}`);
+        else {
+            this.generateConsoleLog(
+                isMatched
+                ? `Passed| Innertext| Element with the text of ${boldGreenText}'${text}'${reset} - innertext was matched. | ${remarks}`
+                : `Failed| Innertext| Element - innertext did not matched. | ${remarks}`
+            )
         }
     }
+    catch(error) {
+        console.error(error)
+        this.generateConsoleLog(`Failed| Unexpected value: ${text} | ${remarks}`);
+    }
+}
 
     // ✅ To verify if the element is visible
     /**
      * @param locator - input the locator parameter
      * @param remarks - input any message or remarks or element name in this parameter
      */
-    async verifyElementVisible(locator: Locator, remarks: string) {
+    async verifyElementVisible(locator: Locator, remarks?: string) {
         try {
             await locator.scrollIntoViewIfNeeded()
             const isVisible = await locator.isVisible();
@@ -95,7 +108,7 @@ export class reusableMethods {
      * @param locator - input the locator parameter
      * @param remarks - input any message or remarks or element name in this parameter
      */
-    async verifyElementNotVisible(locator:Locator, remarks:string) {
+    async verifyElementNotVisible(locator:Locator, remarks?:string) {
         const isHidden = !await locator.isVisible()
         try {
             this.generateConsoleLog(
@@ -115,7 +128,7 @@ export class reusableMethods {
      * @param remarks - input any message or remarks or element name in this parameter
      */
 
-    async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks: string) {
+    async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks?: string) {
         const placeholder = await locator.getAttribute(`${attribute}`)
         try {
             this.generateConsoleLog(
@@ -139,7 +152,7 @@ export class reusableMethods {
      * @param **Note:** If you are using DragX and DragY make sure you input the coordinates for both
      * @param dragTo - **Optional:** if you have locator parameter to where you will drag to
      */
-    async dragAndDropElement(locator: Locator, remarks: string, dragX?: number, dragY?: number, dragTo?: Locator) {
+    async dragAndDropElement(locator: Locator, dragX: number, dragY: number, remarks?: string, dragTo?: Locator) {
         let curPositionX: any
         let curPositionY: any
         let newPositionX: any
@@ -149,14 +162,15 @@ export class reusableMethods {
             curPositionX = position?.x
             curPositionY = position?.y
 
-            console.log(`${dragX} and ${dragY}`)
+            // console.log(`${dragX} and ${dragY}`)
             if((dragX !== undefined ) && (dragY !== undefined)) {
-                console.log(`Make it here?`)
                 await locator.hover()
                 await this.page.mouse.down();
-                await this.page.mouse.move(dragX ?? 0, dragY ?? 0, {steps: 10});
+                await this.page.mouse.move(dragX ?? 0, dragY ?? 0, {steps: 20});
                 await this.page.mouse.up();
-                console.log(`Is it success?`)
+                await this.page.keyboard.press('Escape')
+                await this.page.locator('body').click()
+                await this.page.waitForTimeout(200)
             }
             else if(dragTo !== undefined) {
                 await locator.dragTo(dragTo ?? locator)
@@ -169,7 +183,7 @@ export class reusableMethods {
             newPositionX = newPosition?.x
             newPositionY = newPosition?.y
 
-            console.log(`Current Position: ${curPositionX} and ${curPositionY}\nNew Position: ${newPositionX} and ${newPositionY}`)
+            // console.log(`Current Position: ${curPositionX} and ${curPositionY}\nNew Position: ${newPositionX} and ${newPositionY}`)
 
             this.generateConsoleLog((curPositionX !== (newPositionX)) && (curPositionY !== (newPositionY)) ? `Passed| Drag and Drop| Element - was dragged| ${remarks}`
                 : `Failed| Drag and Drop| Element - was not dragged| ${remarks}`)
@@ -197,7 +211,7 @@ export class reusableMethods {
         const YELLOW = '\x1b[33m'
         const CYAN = '\x1b[36m'
         const RESET = '\x1b[0m'
-        let setMessage: any;
+        let setMessage: string = '';
         let [
             isSuccess,
             title, 
@@ -208,20 +222,35 @@ export class reusableMethods {
         let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found", "Attribute", "Drag and Drop"].find(word => title.toLowerCase() === (word.toLowerCase()))
         try {
             if(isSuccess === "Warning") {
-                setMessage = console.log(`\n\n|================ Element ${isAction} =============================|\n\n` + 
-                            `⚠️  Warning ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ""}'${RESET} ${splitMessage2 !== undefined ? splitMessage2 : ""}\n\n` +
-                            `|============================================================|`)
+                setMessage = `\n⚠️  Warning ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 !== undefined ? splitMessage2 : ""}`
             }
             else {
-                setMessage = console.log(`\n\n|================ Element ${isAction} =============================|\n\n` +
-                            `${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ""}'${RESET} ${splitMessage2 ? splitMessage2 : ""}\n\n` +
-                            `|============================================================|`);
+                setMessage = `\n${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 ? splitMessage2 : ""}`;
             }
+            this.logBuffer.push(setMessage)
         }
         catch(error) {
             console.error(error)
+            this.logBuffer.push(`❌ Logging Error: ${error}`)
         }
         return setMessage;
+    }
+
+    async printSummary(methodName: string) {
+        const YELLOW = '\x1b[33m'
+        const RESET = '\x1b[0m'
+        console.log(`\n${YELLOW}|>>> FINAL LOG SUMMARY FOR: ${methodName} <<<|${RESET}`)
+        const fixCount = 23;
+        const totalLength = methodName.length + fixCount
+        const dynamicBorder = "=".repeat(totalLength)
+        if(this.logBuffer.length === 0) {
+            console.log(`No logs collected`)
+        }
+        else {
+            console.log(this.logBuffer.join(''))
+        }
+        console.log(`\n${YELLOW}|>>> ${dynamicBorder} <<<|${RESET}\n`)
+        this.logBuffer = [];
     }
 
     // ==============================
@@ -253,9 +282,9 @@ export class reusableMethods {
                 return route.continue();
             });
             await this.page.goto(url, {timeout: 60000, waitUntil: 'domcontentloaded'})
-            console.log(`\n\n|================ ENVIRONMENT ACCESS =====================|\n`)
+            console.log(`\n\n>>> ENVIRONMENT ACCESS <<<|\n`)
             console.log(`✅ Able to access the url \x1b[36m'${url.toString()}'\x1b[0m`)
-            console.log(`\n|====================================================|`)
+            console.log(`\n|>>> =================== <<<|`)
         }
     }
 }
