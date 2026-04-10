@@ -41,7 +41,7 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
     test('Verify the Temperature Tab', {tag: '@P1'}, async () => {
         await iot.verifyTemperaturePower()
         await iot.dragTheTemperatureDegree(300, 65, 21)
-        await iot.dragTheTemperatureDegree(200, 320, 12)
+        await iot.dragTheTemperatureDegree(200, 350, 12)
         await iot.dragTheTemperatureDegree(300, 65, 21)
         await iot.dragTheTemperatureDegree(385, 300, 30)
     })
@@ -49,9 +49,9 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
     test('Verify the Humidity Tab', {tag: '@P1'}, async () => {
         await iot.clickHumidity()
         await iot.verifyHumidityPower()
-        await iot.dragTheHumidityPercentage(300, 65, 50)
-        await iot.dragTheHumidityPercentage(200, 640, 0)
-        await iot.dragTheHumidityPercentage(300, 65, 50)
+        await iot.dragTheHumidityPercentage(320, 70, 50)
+        await iot.dragTheHumidityPercentage(180, 700, 0)
+        await iot.dragTheHumidityPercentage(320, 70, 50)
         await iot.dragTheHumidityPercentage(385, 640, 100)
     })
 
