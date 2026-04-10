@@ -130,9 +130,11 @@ export class reusableMethods {
 
     async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks?: string) {
         const placeholder = await locator.getAttribute(`${attribute}`)
+        const boldGreenText = '\x1b[1;32m'
+        const reset = '\x1b[0m'
         try {
             this.generateConsoleLog(
-                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched| ${remarks}`
+                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched\n● ${boldGreenText}Attribute: ${attribute}${reset} >>> ${boldGreenText}Value: ${value}${reset}| ${remarks}`
                 : `Failed| Attribute| Element - attribute was not matched| ${remarks}`
             )
         }
@@ -169,7 +171,7 @@ export class reusableMethods {
                 await this.page.mouse.move(dragX ?? 0, dragY ?? 0, {steps: 20});
                 await this.page.mouse.up();
                 await this.page.keyboard.press('Escape')
-                await this.page.locator('body').click()
+                await locator.click({force: true})
                 await this.page.waitForTimeout(200)
             }
             else if(dragTo !== undefined) {
@@ -206,9 +208,9 @@ export class reusableMethods {
      * * 4 - elementName / Remarks
      */
     async generateConsoleLog(response: string):Promise<String> {
-        const RED = '\x1b[31m'
-        const GREEN = '\x1b[32m'
-        const YELLOW = '\x1b[33m'
+        // const RED = '\x1b[31m'
+        // const GREEN = '\x1b[32m'
+        // const YELLOW = '\x1b[33m'
         const CYAN = '\x1b[36m'
         const RESET = '\x1b[0m'
         let setMessage: string = '';
