@@ -43,11 +43,11 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { 
-        ...devices['Desktop Chrome'],
-        // viewport: null,
+        // ...devices['Desktop Chrome'],
+        viewport: null,
         launchOptions: {
           // headless: false,
-          // args: ['--start-maximized'],
+          args: ['--start-maximized'],
           slowMo: 200,
         },
         // viewport: null,
