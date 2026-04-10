@@ -32,7 +32,9 @@ export default defineConfig({
     // 1. Remove 'viewport: null' and deviceScaleFactor conflicts
     // 2. Use launchOptions to trigger the window size
     // viewport: { width: 1920, height: 1080 },
-
+    launchOptions: {
+      // args: ['--start-maximized']
+    },
     trace: 'on-first-retry',
   },
 
@@ -41,13 +43,14 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { 
-        // ...devices['Desktop Chrome'],
-        viewport: null,
+        ...devices['Desktop Chrome'],
+        // viewport: null,
         launchOptions: {
-          headless: false,
-          args: ['--start-maximized'],
+          // headless: false,
+          // args: ['--start-maximized'],
           slowMo: 200,
-        }
+        },
+        // viewport: null,
        },
     },
 
