@@ -31,7 +31,8 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // 1. Remove 'viewport: null' and deviceScaleFactor conflicts
     // 2. Use launchOptions to trigger the window size
-    // viewport: { width: 1920, height: 1080 },
+    viewport: { width: 1920, height: 1080 },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     launchOptions: {
       // args: ['--start-maximized']
     },
@@ -44,10 +45,9 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         // ...devices['Desktop Chrome'],
-        viewport: null,
         launchOptions: {
           // headless: false,
-          args: ['--start-maximized'],
+          // args: ['--start-maximized'],
           slowMo: 200,
         },
         // viewport: null,
