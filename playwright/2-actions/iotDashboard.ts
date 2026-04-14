@@ -9,6 +9,7 @@ export class iotDashboard {
         this.rm = new reusableMethods(page)
     }
 
+    private months:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     /**
      * 
      * @param locatorName - Input the name to select element.
@@ -56,9 +57,9 @@ export class iotDashboard {
             flameHumidity               :   '//*[@name="humidity-mode"]//*[@class="nb-flame-circled"]',
             loopHumidity                :   '//*[@name="humidity-mode"]//*[@class="nb-loop-circled"]',
             tabECTitle                  :   '//*[contains(text(), "Electricity Consumption")]',
-            btnECTabSet                 :   '//*[@class="tabset"]',
+            btnECTabSetYear             :   (year: string) => `//*[@class="tabset"]//*[text()="${year}"]`,
             tabElectricConsumptionYear  :   (year: string) => `//*[@ng-reflect-tab-title="${year}"]`,
-            lstElectricConsumptionMonth :   '//*[@role="listitem" and contains(., "Jan")]',
+            lstElectricConsumptionMonth :   (year: string, month: string) => `//*[@ng-reflect-tab-title="${year}"]//*[@role="listitem" and contains(., "${month}")]`,
 
             // This is text only for the sidebar menu
             menuIotDashboardText        :   '//span[text()="IoT Dashboard"]',
@@ -399,6 +400,39 @@ export class iotDashboard {
         finally {await this.rm.printSummary(stepName)}
     }
 
+    /**
+     * 
+     * @param year Input the year of electric consumption
+     */
+    async clickElectricConsumptionYear(year: string) {
+        const stepName = `Click the Electric Consumption ${year} Year tab`
+        try {
+            await this.rm.verifyInnerTextElement(this.locators('btnECTabSetYear', `${year}`), 'getText', 'Getting the tab value of the Year')
+            await this.rm.clickElement(this.locators('btnECTabSetYear', `${year}`), 'Click the tab of the Year')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
 
+    async verifyElectricConsumptionList(year: string) {
+        const stepName = `Verify the List of Electric Consumption for the year ${year}`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            for(const mos of this.months){
+                const locatorIcon = this.locators('lstElectricConsumptionMonth', `${year}`, `${mos}`).locator('nb-icon')
+                const locatorResults = this.locators('lstElectricConsumptionMonth', `${year}`, `${mos}`).locator('.results')
 
+                //For Log Buffer -- Getting Attribute
+                this.rm.logBuffer.push(`\n>>>> GETTING THE VALUE FOR THE MONTH OF ${mos.toUpperCase()} <<<<`)
+                await this.rm.verifyElementAttribute(locatorIcon, 'class', 'getValue', `Getting the Monthly Consumption Status for year ${year} and month of ${mos}`)
+                //For Log Buffer -- Getting InnerText
+                await this.rm.verifyInnerTextElement(locatorResults, 'getText', `Getting the Month Consumption for year ${year} and month of ${mos}`)
+                this.rm.logBuffer.push('\n>>>> END <<<<\n')
+            }
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+
+    verifyElectricConsumptionConsumeAndSpent() {
+        
+    }
 }

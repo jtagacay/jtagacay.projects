@@ -2,7 +2,7 @@ import { Locator, expect, Page, PlaywrightTestConfig } from '@playwright/test';
 
 export class reusableMethods {
     readonly page: Page
-    private logBuffer: string[] = []
+    public logBuffer: string[] = []
     constructor(page: Page) {
         this.page = page
     }
@@ -48,7 +48,6 @@ export class reusableMethods {
     const boldGreenText = '\x1b[1;32m'
     const CYAN = '\x1b[36m'
     const reset = '\x1b[0m'
-    
     await locator.scrollIntoViewIfNeeded()
     try {
         await expect(locator).toHaveText(/.+/, {timeout: 2000})
@@ -62,11 +61,9 @@ export class reusableMethods {
             return val;
         }, pseudo);
         // ------------------------------------------
-
         const isMatched = innerText.toLowerCase() === text.toLowerCase()
-        
         if(text === 'getText') {
-            this.generateConsoleLog(`Warning| Innertext| The user select ${boldGreenText}'getText'${reset}\n ● Initiate getting the innertext of ${CYAN}'${remarks}'${reset}\n ● The innertext value of the element is ${boldGreenText}'${innerText}'${reset}`)
+            this.generateConsoleLog(`Passed| Innertext| The innertext value of the element is ${boldGreenText}'${innerText}'${reset}`)
             return innerText
         }
         else {
@@ -90,7 +87,7 @@ export class reusableMethods {
      */
     async verifyElementVisible(locator: Locator, remarks?: string) {
         try {
-            await locator.scrollIntoViewIfNeeded()
+            // await locator.scrollIntoViewIfNeeded()
             const isVisible = await locator.isVisible();
             this.generateConsoleLog(
                 isVisible ? `Passed| Visible| Element - is visible.| ${remarks}`
@@ -125,18 +122,28 @@ export class reusableMethods {
     // ✅ To verify if the attribute of the element is expected
     /**
      * @param locator - input the locator parameter
+     * * * **Note:** Use `getValue` if you want to get the text from innertext.
+     * Otherwise, input a text
      * @param remarks - input any message or remarks or element name in this parameter
      */
 
     async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks?: string) {
         const placeholder = await locator.getAttribute(`${attribute}`)
         const boldGreenText = '\x1b[1;32m'
+        const CYAN = '\x1b[36m'
         const reset = '\x1b[0m'
         try {
-            this.generateConsoleLog(
-                placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched\n● ${boldGreenText}Attribute: ${attribute}${reset} >>> ${boldGreenText}Value: ${value}${reset}| ${remarks}`
-                : `Failed| Attribute| Element - attribute was not matched| ${remarks}`
-            )
+            if(value === 'getValue') {
+                placeholder !== null
+                ? this.generateConsoleLog(`Passed| Attribute| The value of the ${attribute} attribute is ${boldGreenText}'${placeholder}'${reset}| ${remarks}`)
+                : this.generateConsoleLog(`Failed| Attribute| The element does not have the ${attribute} attribute.| ${remarks}`)
+            }
+            else {
+                this.generateConsoleLog(
+                    placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched\n● ${boldGreenText}Attribute: ${attribute}${reset} >>> ${boldGreenText}Value: ${value}${reset}| ${remarks}`
+                    : `Failed| Attribute| Element - attribute was not matched| ${remarks}`
+                )
+            }
         }
         catch(error) {
             console.error(error)
@@ -224,7 +231,7 @@ export class reusableMethods {
         let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found", "Attribute", "Drag and Drop"].find(word => title.toLowerCase() === (word.toLowerCase()))
         try {
             if(isSuccess === "Warning") {
-                setMessage = `\n⚠️  Warning ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 !== undefined ? splitMessage2 : ""}`
+                setMessage = `\n⚠️  Warning ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 !== undefined ? splitMessage2 : ""}\n`
             }
             else {
                 setMessage = `\n${isSuccess === "Passed" ? `✅ Passed: ` : `❌ Failed: `} ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 ? splitMessage2 : ""}`;
