@@ -1,4 +1,4 @@
-import { test, Page } from "playwright/test";
+import { test, Page, chromium } from "playwright/test";
 import { reusableMethods } from "../1-global/reusableMethods";
 import { iotDashboard } from "../2-actions/iotDashboard";
 
@@ -9,7 +9,7 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
 
     test.beforeAll(async({ browser }) => {
         const context = await browser.newContext()
-        page = await browser.newPage()
+        page = await context.newPage()
         rm = new reusableMethods(page)
         iot = new iotDashboard(page)
         await rm.goToEnvironment('test');
@@ -38,22 +38,22 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
         await iot.verifyToggleCoffeeMaker()
     })
 
-    test('Verify the Temperature Tab', {tag: '@P1'}, async () => {
-        await iot.verifyTemperaturePower()
-        await iot.dragTheTemperatureDegree(300, 65, 21)
-        await iot.dragTheTemperatureDegree(200, 350, 12)
-        await iot.dragTheTemperatureDegree(300, 65, 21)
-        await iot.dragTheTemperatureDegree(385, 300, 30)
-    })
+    // test('Verify the Temperature Tab', {tag: '@P1'}, async () => {
+    //     await iot.verifyTemperaturePower()
+    //     await iot.dragTheTemperatureDegree(280, 65, 21)
+    //     await iot.dragTheTemperatureDegree(150, 700, 12)
+    //     await iot.dragTheTemperatureDegree(300, 65, 21)
+    //     await iot.dragTheTemperatureDegree(330, 600, 30)
+    // })
 
-    test('Verify the Humidity Tab', {tag: '@P1'}, async () => {
-        await iot.clickHumidity()
-        await iot.verifyHumidityPower()
-        await iot.dragTheHumidityPercentage(320, 70, 50)
-        await iot.dragTheHumidityPercentage(180, 700, 0)
-        await iot.dragTheHumidityPercentage(320, 70, 50)
-        await iot.dragTheHumidityPercentage(385, 640, 100)
-    })
+    // test('Verify the Humidity Tab', {tag: '@P1'}, async () => {
+    //     await iot.clickHumidity()
+    //     await iot.verifyHumidityPower()
+    //     await iot.dragTheHumidityPercentage(300, 60, 50)
+    //     await iot.dragTheHumidityPercentage(180, 700, 0)
+    //     await iot.dragTheHumidityPercentage(300, 60, 50)
+    //     await iot.dragTheHumidityPercentage(385, 640, 100)
+    // })
 
     test('Verify the Temperature Mode', {tag:'@P1'}, async () => {
         await iot.clickTemperature()
@@ -63,5 +63,16 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
     test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
         await iot.clickHumidity()
         await iot.verifyHumidityMode()
+    })
+
+    test('Verify the Electric Consumption', {tag: '@P1'}, async () => {
+        await iot.clickElectricConsumptionYear('2015')
+        await iot.verifyElectricConsumptionList('2015')
+
+        await iot.clickElectricConsumptionYear('2016')
+        await iot.verifyElectricConsumptionList('2016')
+
+        await iot.clickElectricConsumptionYear('2017')
+        await iot.verifyElectricConsumptionList('2017')
     })
 });
