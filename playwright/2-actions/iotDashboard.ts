@@ -16,8 +16,8 @@ export class iotDashboard {
      *      💾  This is where I store locators for the iotDashboard
      */
 
-    private locators(locatorName: string): Locator {
-        const AppLocators: Record <string, string> = {
+    private locators(locatorName: string, ...params: string[]): Locator {
+        const AppLocators: Record<string, string | ((...args: string[]) => string)> = {
             textLogo                    :   '//*[@class="fixed"]//*[@class="logo"]',
             sidebarToggle               :   '//*[@class="fixed"]//*[contains(@class, "sidebar-toggle")]',
             // appearanceSelectio         :   '//*[@class="fixed"]//button[@class="select-button"]',    //This is a wrong name to force failed some line (expected)
@@ -28,7 +28,8 @@ export class iotDashboard {
             userAvatar                  :   '//*[contains(@class, "user-action")]',
             userSelectProfile           :   '//*[text()="Profile"]',
             userSelectLogout            :   '//*[text()="Log out"]',
-            userProfileName             :   '//*[@class="fixed"]//*[contains(@class, "user-name")]',
+            // userProfileName             :   '//*[contains(@class,"user-action")]//div[contains(@class, "user-name")]',
+            userProfileName             :   '//*[contains(@class, "user-action")]//*[text()="Nick Jones"]',
             menuIotDashboard            :   '//*[@class="menu-items"]//*[@title="IoT Dashboard"]',
             menuForms                   :   '//*[@class="menu-items"]//*[@title="Forms"]',
             menuModalOverlays           :   '//*[@class="menu-items"]//*[@title="Modal & Overlays"]',
@@ -54,9 +55,10 @@ export class iotDashboard {
             sunnyHumidity               :   '//*[@name="humidity-mode"]//*[@class="nb-sunny-circled"]',
             flameHumidity               :   '//*[@name="humidity-mode"]//*[@class="nb-flame-circled"]',
             loopHumidity                :   '//*[@name="humidity-mode"]//*[@class="nb-loop-circled"]',
-            
-
-
+            tabECTitle                  :   '//*[contains(text(), "Electricity Consumption")]',
+            btnECTabSet                 :   '//*[@class="tabset"]',
+            tabElectricConsumptionYear  :   (year: string) => `//*[@ng-reflect-tab-title="${year}"]`,
+            lstElectricConsumptionMonth :   '//*[@role="listitem" and contains(., "Jan")]',
 
             // This is text only for the sidebar menu
             menuIotDashboardText        :   '//span[text()="IoT Dashboard"]',
@@ -70,13 +72,18 @@ export class iotDashboard {
             //*[contains(@class, "status")]
 
         }
-        let xpath = AppLocators[locatorName]
-        // Check if the key actually exists
-        if (!xpath) {
+
+        const locatorDefinition = AppLocators[locatorName]
+        if (!locatorDefinition) {
             this.rm.generateConsoleLog(`Failed| Not Found| Locator name - not found Continuing...| ${locatorName}`)
-            return this.page.locator(xpath);
+            return this.page.locator('')
         }
-        return this.page.locator(xpath);
+
+        const xpath = typeof locatorDefinition === 'function'
+            ? locatorDefinition(...params)
+            : locatorDefinition
+
+        return this.page.locator(xpath)
     }
 
     async verifyTextLogoIsVisible() {
@@ -382,5 +389,16 @@ export class iotDashboard {
         }
         finally {await this.rm.printSummary(stepsName)}
     }
+
+    async verifyIsVisibleElectricConsumptionTitle() {
+        const stepName = `Verify the Electric Consumption Tab title is Visible`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.verifyElementVisible(this.locators('tabECTitle'), 'Electric Consumption Tab title')
+        }
+        finally {await this.rm.printSummary(stepName)}
+    }
+
+
 
 }
