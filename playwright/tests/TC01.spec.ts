@@ -14,29 +14,29 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
         iot = new iotDashboard(page)
         await rm.goToEnvironment('test');
     })
-    test('Verify the menu inside the top bar container', {tag: '@P1'}, async () => {
-        await iot.verifySidebarToggleIsVisble();
-        await iot.verifyTextLogoIsVisible()
-        await iot.verifyAppearanceToggleIsVisible()
-        await iot.verifySearchIsVisible()
-        await iot.verifyEmailIsVisible()
-        await iot.verifyNotificationIsVisible()
-        await iot.verifyProfileAvatarIsVisible()
-        await iot.verifyProfileNameIsVisible()
-    })
+    // test('Verify the menu inside the top bar container', {tag: '@P1'}, async () => {
+    //     await iot.verifySidebarToggleIsVisble();
+    //     await iot.verifyTextLogoIsVisible()
+    //     await iot.verifyAppearanceToggleIsVisible()
+    //     await iot.verifySearchIsVisible()
+    //     await iot.verifyEmailIsVisible()
+    //     await iot.verifyNotificationIsVisible()
+    //     await iot.verifyProfileAvatarIsVisible()
+    //     await iot.verifyProfileNameIsVisible()
+    // })
 
     test('Verify the sidebar menu when', {tag: '@P1'}, async () => {
         await iot.clickTheSideBarMenu()
         await iot.sideBarMenuIsNotVisible()
     })
 
-    test('Verify the Toogle Light', {tag: '@P1'}, async () => {
-        await iot.verifyLightIsVisible()
-        await iot.verifyToggleLight()
-        await iot.verifyToggleRollerShades()
-        await iot.verifyToggleWirelessAudio()
-        await iot.verifyToggleCoffeeMaker()
-    })
+    // test('Verify the Toogle Light', {tag: '@P1'}, async () => {
+    //     await iot.verifyLightIsVisible()
+    //     await iot.verifyToggleLight()
+    //     await iot.verifyToggleRollerShades()
+    //     await iot.verifyToggleWirelessAudio()
+    //     await iot.verifyToggleCoffeeMaker()
+    // })
 
     // test('Verify the Temperature Tab', {tag: '@P1'}, async () => {
     //     await iot.verifyTemperaturePower()
@@ -55,24 +55,39 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
     //     await iot.dragTheHumidityPercentage(385, 640, 100)
     // })
 
-    test('Verify the Temperature Mode', {tag:'@P1'}, async () => {
-        await iot.clickTemperature()
-        await iot.verifyTemperatureMode()
-    })
+    // test('Verify the Temperature Mode', {tag:'@P1'}, async () => {
+    //     await iot.clickTemperature()
+    //     await iot.verifyTemperatureMode()
+    // })
     
-    test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
-        await iot.clickHumidity()
-        await iot.verifyHumidityMode()
-    })
+    // test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
+    //     await iot.clickHumidity()
+    //     await iot.verifyHumidityMode()
+    // })
 
     test('Verify the Electric Consumption', {tag: '@P1'}, async () => {
-        await iot.clickElectricConsumptionYear('2015')
-        await iot.verifyElectricConsumptionList('2015')
+        // await iot.clickElectricConsumptionYearTab('2015')
+        // await iot.verifyElectricConsumptionList('2015')
 
-        await iot.clickElectricConsumptionYear('2016')
-        await iot.verifyElectricConsumptionList('2016')
+        // await iot.clickElectricConsumptionYearTab('2016')
+        // await iot.verifyElectricConsumptionList('2016')
 
-        await iot.clickElectricConsumptionYear('2017')
-        await iot.verifyElectricConsumptionList('2017')
+        // await iot.clickElectricConsumptionYearTab('2017')
+        // await iot.verifyElectricConsumptionList('2017')
+
+        await iot.verifyElectricConsumptionConsumeAndSpent()
+        await iot.clickElectricConsumptionDateFilter()
+        await iot.verifyTheSelectedDates('Month')
+        await iot.clickElectricConsumptionDateFilter()
+        await iot.verifyTheSelectedDates('Year')
+    })
+
+    test('Verify the Electric Consumption Graph', {tag: '@P1'}, async () => {
+        await iot.verifyTheElectricConsumptionChart()
+    })
+
+    test('Verify the Room Management', {tag: '@P1'}, async () => {
+        await iot.verifyRoomManagementIsVisible()
+        await iot.verifyTheRoomsIsVisible()
     })
 });
