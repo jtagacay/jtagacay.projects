@@ -39,7 +39,7 @@ export class reusableMethods {
     /**
      * @param locator - input the locator
      * @param text - input a text that should be expected
-     * * **Note:** Use `getText` if you want to get the text from innertext.
+     * * **Note:** Use `getText` or `notNull` if you want to get the text from innertext.
      * Otherwise, input a text
      * @param remarks - input any message or remarks or element name in this parameter 
      * @param [pseudo=""] - **OPTIONAL** only for ::before or ::after
@@ -60,13 +60,17 @@ export class reusableMethods {
             }
             return val;
         }, pseudo);
-        // ------------------------------------------
-        const isMatched = innerText.toLowerCase() === text.toLowerCase()
         if(text === 'getText') {
             this.generateConsoleLog(`Passed| Innertext| The innertext value of the element is ${boldGreenText}'${innerText}'${reset}`)
             return innerText
         }
+        else if(text === 'notNull') {
+            const isNotNull = innerText.length > 0
+            this.generateConsoleLog(isNotNull ? `Passed| Innertext| The innertext of the element ${boldGreenText}'${remarks}'${reset} is not null\n • ${boldGreenText}Value:${reset} ${CYAN}'${innerText}'${reset}`
+            : `Failed| Innertext| The innertext of the element ${boldGreenText}'${remarks}'${reset} was null`)
+        }
         else {
+            const isMatched = innerText.toLowerCase() === text.toLowerCase()
             this.generateConsoleLog(
                 isMatched
                 ? `Passed| Innertext| Element with the text of ${boldGreenText}'${text}'${reset} - innertext was matched. | ${remarks}`
@@ -87,7 +91,7 @@ export class reusableMethods {
      */
     async verifyElementVisible(locator: Locator, remarks?: string) {
         try {
-            // await locator.scrollIntoViewIfNeeded()
+            await locator.scrollIntoViewIfNeeded()
             const isVisible = await locator.isVisible();
             this.generateConsoleLog(
                 isVisible ? `Passed| Visible| Element - is visible.| ${remarks}`
@@ -128,6 +132,7 @@ export class reusableMethods {
      */
 
     async verifyElementAttribute(locator: Locator, attribute: string, value: string, remarks?: string) {
+        await locator.scrollIntoViewIfNeeded()
         const placeholder = await locator.getAttribute(`${attribute}`)
         const boldGreenText = '\x1b[1;32m'
         const CYAN = '\x1b[36m'
@@ -140,7 +145,7 @@ export class reusableMethods {
             }
             else {
                 this.generateConsoleLog(
-                    placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched\n● ${boldGreenText}Attribute: ${attribute}${reset} >>> ${boldGreenText}Value: ${value}${reset}| ${remarks}`
+                    placeholder?.toLowerCase()?.includes(value.toLowerCase()) ? `Passed| Attribute| Element - attribute was matched\n ● ${boldGreenText}Attribute: ${attribute}${reset} >>> ${boldGreenText}Value: ${value}${reset}| ${remarks}`
                     : `Failed| Attribute| Element - attribute was not matched| ${remarks}`
                 )
             }
@@ -162,6 +167,7 @@ export class reusableMethods {
      * @param dragTo - **Optional:** if you have locator parameter to where you will drag to
      */
     async dragAndDropElement(locator: Locator, dragX: number, dragY: number, remarks?: string, dragTo?: Locator) {
+        await locator.scrollIntoViewIfNeeded()
         let curPositionX: any
         let curPositionY: any
         let newPositionX: any
@@ -203,6 +209,55 @@ export class reusableMethods {
         }
     }
 
+    async selectElement(locator: Locator, value: string, remarks?: string) {
+        await locator.scrollIntoViewIfNeeded()
+        const boldGreenText = '\x1b[1;32m'
+        const CYAN = '\x1b[36m'
+        const reset = '\x1b[0m'
+
+        let isSelected = false
+        try {
+            locator.selectOption(value)
+            isSelected = true
+        }
+        catch(error) {
+            isSelected = false
+        }
+        this.generateConsoleLog(isSelected ? 
+            `Passed| Selection| Element with a value of ${boldGreenText}'${value}'${reset} was successfully selected'| ${remarks}` 
+            : `Failed| Selection| Element with a value of ${boldGreenText}'${value}'${reset} was not selected| ${remarks}`)
+    }
+
+    /**
+     * 
+     * @param locator - Input the locator
+     * @param xAxis - Input the X axis
+     * @param yAxis - Input the Y axis
+     * @param remarks - Optional: Input some remarks
+     */
+    async hoverElement(locator: Locator, xAxis: number, yAxis: number, remarks?: string) {
+        const boldGreenText = '\x1b[1;32m'
+        const CYAN = '\x1b[36m'
+        const reset = '\x1b[0m'
+        const box = await locator.boundingBox()
+        await locator.scrollIntoViewIfNeeded()
+        if(box) {
+            // --- Moving the mouse
+            // await this.page.mouse.move(box.x + box.width / 2, box.y / box.height / 2);
+            await this.page.mouse.move(xAxis + box.width / 2, yAxis + box.height / 2)
+
+            // --- Getting the value from tooltip
+            const toolTip = locator.locator('xpath=//div[2]')
+            const isVisible = await toolTip.isVisible({timeout: 3000})
+            this.generateConsoleLog(isVisible ? 
+                `Passed| Hovered| The element was ${CYAN}HOVERED${reset} successfully.\nThe toolTip says: ${boldGreenText}'${(await toolTip.innerText()).toString()}'${reset}\nRemarks: | ${remarks}` 
+                : `Warning| Hovered| The element was ${CYAN}HOVERED${reset} successfully.\nHowever the toolTip is not visible.| ${remarks}`)
+        }
+        else {
+            this.generateConsoleLog(`Failed| Hovered| Element - not found.| ${remarks}`)
+        }
+    }
+
     // ==============================
     // 📌 For Console Log
     // ==============================
@@ -228,7 +283,7 @@ export class reusableMethods {
             remarks
             ] = response.split("| ")
         let [splitMessage1, splitMessage2] = message.split(" - ")
-        let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found", "Attribute", "Drag and Drop"].find(word => title.toLowerCase() === (word.toLowerCase()))
+        let isAction = ["Clicked", "Visible", "InnerText", "Not Visible", "Not Found", "Attribute", "Drag and Drop", "Selection", "Hover"].find(word => title.toLowerCase() === (word.toLowerCase()))
         try {
             if(isSuccess === "Warning") {
                 setMessage = `\n⚠️  Warning ${splitMessage1} ${CYAN}'${remarks !== undefined ? remarks : ``}'${RESET} ${splitMessage2 !== undefined ? splitMessage2 : ""}\n`
