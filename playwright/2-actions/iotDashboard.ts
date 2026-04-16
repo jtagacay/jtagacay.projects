@@ -60,6 +60,17 @@ export class iotDashboard {
             btnECTabSetYear             :   (year: string) => `//*[@class="tabset"]//*[text()="${year}"]`,
             tabElectricConsumptionYear  :   (year: string) => `//*[@ng-reflect-tab-title="${year}"]`,
             lstElectricConsumptionMonth :   (year: string, month: string) => `//*[@ng-reflect-tab-title="${year}"]//*[@role="listitem" and contains(., "${month}")]`,
+            ecConsumedLabel              :   '//*[@class="stats"][1]',
+            ecSpentLabel                :   '//*[@class="stats"][2]',
+            ecConsumedValue             :   '//*[@class="stats"][1]//span[2]',
+            ecSpentValue                :   '//*[@class="stats"][2]//span[2]',
+            btnECDateFilter             :   '//*[@class="cards-container"]//button',
+            ecDateFilterWeek            :   '//*[@class="option-list"]//*[@id="nb-option-0"]',
+            ecDateFilterMonth           :   '//*[@class="option-list"]//*[@id="nb-option-1"]',
+            ecDateFilterYear            :   '//*[@class="option-list"]//*[@id="nb-option-2"]',
+            ecChart                     :   '//ngx-electricity-chart',
+            roomManagement              :   '//ngx-room-selector',
+
 
             // This is text only for the sidebar menu
             menuIotDashboardText        :   '//span[text()="IoT Dashboard"]',
@@ -404,7 +415,7 @@ export class iotDashboard {
      * 
      * @param year Input the year of electric consumption
      */
-    async clickElectricConsumptionYear(year: string) {
+    async clickElectricConsumptionYearTab(year: string) {
         const stepName = `Click the Electric Consumption ${year} Year tab`
         try {
             await this.rm.verifyInnerTextElement(this.locators('btnECTabSetYear', `${year}`), 'getText', 'Getting the tab value of the Year')
@@ -418,6 +429,8 @@ export class iotDashboard {
         try {
             await this.page.waitForLoadState('domcontentloaded')
             for(const mos of this.months){
+
+                // Created two locators for the month, one for the icon to get the attribute and the other one for the text to get the innerText value and adding extended locator...
                 const locatorIcon = this.locators('lstElectricConsumptionMonth', `${year}`, `${mos}`).locator('nb-icon')
                 const locatorResults = this.locators('lstElectricConsumptionMonth', `${year}`, `${mos}`).locator('.results')
 
@@ -432,7 +445,115 @@ export class iotDashboard {
         finally{await this.rm.printSummary(stepName)}
     }
 
-    verifyElectricConsumptionConsumeAndSpent() {
+    async verifyElectricConsumptionConsumeAndSpent() {
+        const stepName = `Verify the Consume and Spent Value of Electric Consumption`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.verifyInnerTextElement(this.locators('ecConsumedLabel').locator('.caption').first(), 'Consumed', 'Verify if the label is expected')
+            await this.rm.verifyInnerTextElement(this.locators('ecSpentLabel').locator('.caption').first(), 'Spent', 'Verify if the label is expected')
+            await this.rm.verifyInnerTextElement(this.locators('ecConsumedValue'), 'notNull', 'Consumed Value')
+            await this.rm.verifyInnerTextElement(this.locators('ecSpentValue'), 'notNull', 'Spent Value')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+
+    async clickElectricConsumptionDateFilter() {
+        const stepName = `Verify if the Electric Consumption Date Filter is able to click`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.clickElement(this.locators('btnECDateFilter'), 'Click to select and filter from Dates')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+
+    async verifyTheDatesFilter() {
+        const stepName = `Verify the if selection of DATES to filter is visible`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.verifyElementVisible(this.locators('ecDateFilterWeek'), 'Verify if the WEEK is visible in the selection')
+            await this.rm.verifyElementVisible(this.locators('ecDateFilterMonth'), 'Verify if the MONTH is visible in the selection')
+            await this.rm.verifyElementVisible(this.locators('ecDateFilterYear'), 'Verify if the YEAR is visible in the selection')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+    
+    /**
+     * 
+     * @param value Input to select if "Week" or "Month" or "Year" to for Dates Filtering 
+     */
+    async verifyTheSelectedDates(value: string) {
+        const stepName = `Verify if the DATE '${value} was selected'`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            if(value.toLowerCase() === 'Week'.toLowerCase()) {
+                await this.rm.clickElement(this.locators('ecDateFilterWeek'), `Select the ${value.toUpperCase()}`)
+            }
+            else if(value.toLowerCase() === 'Month'.toLowerCase()) {
+                await this.rm.clickElement(this.locators('ecDateFilterMonth'), `Select the ${value.toUpperCase}`)
+            }
+            else if(value.toLowerCase() === 'Year'.toLowerCase()) {
+                await this.rm.clickElement(this.locators('ecDateFilterYear'), `Select the ${value.toUpperCase}`)
+            }
+            else {
+                console.log('Invalid Data for Filtering Dates...')
+            }
+            await this.rm.verifyInnerTextElement(this.locators('btnECDateFilter'), `${value}`, `Date Filter Selected Value`)
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+
+    /**
+     * 
+     * @param xAxis - Input the X axis
+     * @param yAxis - Input the Y axis
+     */
+    async verifyTheElectricConsumptionChart() {
+        const stepName = `Verify if the Electric Consumption Chart is giving the graph data`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.hoverElement(this.locators('ecChart'), 700, 35.5, 'First hover to check if its working')
+            await this.rm.hoverElement(this.locators('ecChart'), 1000, 35.5, 'Second hover to check if its working')
+            await this.rm.hoverElement(this.locators('ecChart'), 1100, 35.5, 'Third hover to check if its working')
+        }
+        finally{this.rm.printSummary(stepName)}
+    }
+
+    async verifyRoomManagementIsVisible() {
+        const stepName = `Verify if the Room Management section is visible`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+            await this.rm.verifyElementVisible(this.locators('roomManagement'), 'Verify Room Management section')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+    
+    async verifyTheRoomsIsVisible() {
+        const stepName = `Verify if the Rooms are visible`
+        try {
+            await this.page.waitForLoadState('domcontentloaded')
+
+            // -- BEDROOM
+            await this.rm.verifyElementVisible(this.locators('roomManagement').locator('xpath=//*[@id="1"]'), 'BEDROOM')
+            await this.rm.verifyInnerTextElement(this.locators('roomManagement').locator('xpath=//*[@id="1"]'), 'getText')
+
+            // -- LIVING ROOM
+            await this.rm.verifyElementVisible(this.locators('roomManagement').locator('xpath=//*[@id="2"]'), 'LIVING ROOM')
+            await this.rm.verifyInnerTextElement(this.locators('roomManagement').locator('xpath=//*[@id="2"]'), 'getText')
+
+            // -- KITCHEN
+            await this.rm.verifyElementVisible(this.locators('roomManagement').locator('xpath=//*[@id="0"]'), 'KITCHEN')
+            await this.rm.verifyInnerTextElement(this.locators('roomManagement').locator('xpath=//*[@id="0"]'), 'getText')
+
+            // -- HALLWAY
+            await this.rm.verifyElementVisible(this.locators('roomManagement').locator('xpath=//*[@id="3"]'), 'HALLWAY')
+            await this.rm.verifyInnerTextElement(this.locators('roomManagement').locator('xpath=//*[@id="3"]'), 'getText')
+        }
+        finally{await this.rm.printSummary(stepName)}
+    }
+
+    async verifyTheRoomIsSelected() {
+        const stepName = `Verify if the Room is Selected`
         
     }
+
 }
