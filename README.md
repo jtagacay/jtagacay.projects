@@ -1,4 +1,4 @@
-# Playwright Branch.
-This where I will update the playwright
+# Robotframework Branch.
+This where I will update the robotframework
 
-Test Application was cloned here https://github.com/bondar-artem/pw-practice-app
+Test Application: https://ultimateqa.com/automation
