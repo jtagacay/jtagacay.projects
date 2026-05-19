@@ -10,7 +10,11 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+<<<<<<< Updated upstream
     "@types/node": "^25.5.0"
+=======
+    "@types/node": "^25.9.0"
+>>>>>>> Stashed changes
   },
   "dependencies": {
     "playwright": "^1.58.2"
