@@ -1,0 +1,37 @@
+[Info] 5/19/2026 6:10:24 PM: Compacting started
+[Info] 5/19/2026 6:10:27 PM: 0/100 - Compacting Workspace
+[Info] 5/19/2026 6:10:28 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0249984, database size: 7778304
+[Info] 5/19/2026 6:10:28 PM: -2147483648/-2147483648 - Recalculating index statistics
+[Info] 5/19/2026 6:10:28 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0457645, database size: 7778304
+[Info] 5/19/2026 6:10:28 PM: Compacting finished
+[Info] 5/19/2026 7:02:45 PM: 9/100 - Defragmenting Data - [estimated time left 4 s]
+[Info] 5/19/2026 7:02:45 PM: Compacting started
+[Info] 5/19/2026 7:02:46 PM: 27/100 - Defragmenting Data - [estimated time left 3 s]
+[Info] 5/19/2026 7:02:46 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0235087, database size: 7868416
+[Info] 5/19/2026 7:02:46 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0430954, database size: 7868416
+[Info] 5/19/2026 7:02:46 PM: Compacting finished
+[Info] 5/19/2026 9:36:11 PM: 16/100 - Defragmenting Data - [estimated time left 3 s]
+[Info] 5/19/2026 9:36:11 PM: Compacting started
+[Info] 5/19/2026 9:36:12 PM: 42/100 - Defragmenting Data - [estimated time left 2 s]
+[Info] 5/19/2026 9:36:12 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0615731, database size: 8552448
+[Info] 5/19/2026 9:36:13 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0414856, database size: 8552448
+[Info] 5/19/2026 9:36:13 PM: Compacting finished
+[Info] 5/20/2026 9:34:30 PM: 23/100 - Defragmenting Data - [estimated time left 2 s]
+[Info] 5/20/2026 9:34:30 PM: Compacting started
+[Info] 5/20/2026 9:34:31 PM: 54/100 - Defragmenting Data - [estimated time left 1 s]
+[Info] 5/20/2026 9:34:32 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0887466, database size: 10014720
+[Info] 5/20/2026 9:34:32 PM: 89/100 - Defragmenting Data - [estimated time left 0 s]
+[Info] 5/20/2026 9:34:32 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0630878, database size: 10014720
+[Info] 5/20/2026 9:34:32 PM: Compacting finished
+[Info] 5/20/2026 9:48:33 PM: 14/100 - Defragmenting Data - [estimated time left 2 s]
+[Info] 5/20/2026 9:48:33 PM: Compacting started
+[Info] 5/20/2026 9:48:34 PM: 46/100 - Defragmenting Data - [estimated time left 1 s]
+[Info] 5/20/2026 9:48:34 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0971464, database size: 10403840
+[Info] 5/20/2026 9:48:35 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0672999, database size: 10403840
+[Info] 5/20/2026 9:48:35 PM: Compacting finished
+[Info] 5/20/2026 10:14:18 PM: 15/100 - Defragmenting Data - [estimated time left 2 s]
+[Info] 5/20/2026 10:14:19 PM: Compacting started
+[Info] 5/20/2026 10:14:19 PM: 49/100 - Defragmenting Data - [estimated time left 1 s]
+[Info] 5/20/2026 10:14:20 PM: Compacting Workspace - Defragmentation finished in 00:00:01.0241388, database size: 10412032
+[Info] 5/20/2026 10:14:20 PM: Compacting Workspace - Recalculating Index Statistics finished in 00:00:00.0413534, database size: 10412032
+[Info] 5/20/2026 10:14:20 PM: Compacting finished
