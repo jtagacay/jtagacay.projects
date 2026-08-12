@@ -60,10 +60,10 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
     //     await iot.verifyTemperatureMode()
     // })
     
-    // test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
-    //     await iot.clickHumidity()
-    //     await iot.verifyHumidityMode()
-    // })
+    /test('Verify the Humidity Mode', {tag: '@P1'}, async () => {
+        await iot.clickHumidity()
+         await iot.verifyHumidityMode()
+     })
 
     test('Verify the Electric Consumption', {tag: '@P1'}, async () => {
         // await iot.clickElectricConsumptionYearTab('2015')
