@@ -29,6 +29,7 @@ test.describe.serial(`TC01 - IoT Dashboard`, () => {
         await iot.clickTheSideBarMenu()
         await iot.sideBarMenuIsNotVisible()
     })
+        //
 
     // test('Verify the Toogle Light', {tag: '@P1'}, async () => {
     //     await iot.verifyLightIsVisible()
